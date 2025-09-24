@@ -1,0 +1,6 @@
+date,partner,amount,source_file,ingested_at
+2025-05-01,ACME Iberia,,ventas_mes.csv,2025-09-24T14:49:44.958395+00:00
+2025-05-05,Globex SA,,ventas_mes.csv,2025-09-24T14:49:44.958395+00:00
+2025-05-12,Initech SL,,ventas_mes.csv,2025-09-24T14:49:44.958395+00:00
+2025-05-18,Umbrella Corp,,ventas_mes.csv,2025-09-24T14:49:44.958395+00:00
+2025-05-28,Wayne Enterprises,,ventas_mes.csv,2025-09-24T14:49:44.958395+00:00
