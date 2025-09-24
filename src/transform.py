@@ -88,37 +88,33 @@ def normalize_columns(df: pd.DataFrame, mapping: Dict[str, str]) -> pd.DataFrame
     return out[["date", "partner", "amount"]]
 
 
+
+# src/transform.py
+
 def to_silver(bronze: pd.DataFrame) -> pd.DataFrame:
     """
     Agrega amount por partner y mes.
-    - month: derivado de 'date' como inicio de mes (Timestamp).
-
-    Parameters
-    ----------
-    bronze : pd.DataFrame
-        Debe contener columnas: date (datetime64[ns]), partner (string), amount (float).
-
-    Returns
-    -------
-    pd.DataFrame
-        Columnas: partner, month (Timestamp inicio de mes), amount (float).
+    - month: inicio de mes (Timestamp).
     """
     df = bronze.copy()
 
-    # Derivar mes como Period y materializar a timestamp inicio de mes
-    month = pd.to_datetime(df["date"], errors="coerce").dt.to_period("M").dt.to_timestamp("MS")
-    df["month"] = month
+    # Asegura datetime y genera el inicio de mes sin usar 'MS' como freq
+    d = pd.to_datetime(df["date"], errors="coerce")
+    df["month"] = d.dt.to_period("M").dt.to_timestamp(how="start")  # inicio de mes
+
+    # Elimina filas sin fecha válida o sin partner
+    df = df.dropna(subset=["month", "partner"])
 
     # Agregación
     agg = (
-        df.groupby(["partner", "month"], dropna=True, as_index=False)["amount"]
-        .sum()
+        df.groupby(["partner", "month"], as_index=False, dropna=True)["amount"]
+          .sum()
     )
 
-    # Orden y tipos coherentes
+    # Tipos coherentes
     agg["partner"] = agg["partner"].astype("string")
     agg["amount"] = agg["amount"].astype("float64")
-    # month ya es Timestamp
 
     return agg[["partner", "month", "amount"]]
+
 
