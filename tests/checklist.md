@@ -6,8 +6,8 @@
   - La app carga, permite subir CSV y muestra bronze, silver, KPIs y descargas.
 
 - [ ] **bronze.csv y silver.csv subidos a `/data`**
-  - `data/bronze/bronze_ventas_mes_2025_*.csv` presentes.
-  - `data/silver/silver_ventas_mes_2025_*.csv` presentes.
+  - `data/bronze/bronze_ventas_mes_2025-05.csv` presentes.
+  - `data/silver/silver_ventas_mes_2025-05.csv` presentes.
   - Archivos versionados con nombres auditables.
 
 - [ ] **README con decisiones justificadas (5V → elecciones) y capturas en `docs/`**
