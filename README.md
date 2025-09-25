@@ -121,6 +121,10 @@ Este laboratorio prioriza trazabilidad, simplicidad operativa y calidad de datos
      - Técnica: detección automática de esquema sugerido por similitud de nombres y bloqueo si falta alguna columna canónica.
      - Validación: regla estricta de no nulos en date, partner y amount, duplicados por clave natural rechazados.
      - Operativa: checklist en la app antes de derivar a silver y procedimiento de reingesta con registro de incidentes.
+
+
+
+
     
 
 
@@ -128,3 +132,27 @@ Este laboratorio prioriza trazabilidad, simplicidad operativa y calidad de datos
 | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | [Veracidad/Velocidad/Volumen/Variedad/Valor] | Ingesta: [batch o streaming]; Storage: [bronze silver parquet particionado]; Compute: [pandas o Spark, ventanas, dedupe]; Analítica: [KPIs, SLA, segmentación] | [deriva de esquema, datos tardíos, duplicados, PII, picos] | [mapeo dinámico, watermark, clave natural, mascarado PII, autoscaling] | [SLA de frescura, % completitud, tasa de errores, tiempo de lectura, precisión de reporte] |
 
+
+
+
+
+
+| V prioritaria | Elecciones (Ingesta/Storage/Compute/Analítica)                                                                                                                                                                                                                   | Riesgos clave                                                                     | Mitigaciones                                                                                                   | Métrica de éxito                                                                                                                 |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Veracidad     | Ingesta: batch diario con control de duplicados; Storage: bronze inmutable y silver en Parquet particionado por month; Compute: pandas vectorizado con normalización de moneda y fechas; Analítica: KPIs de revenue, AOV y partners activos con SLA diario 09:00 | Mapeo incorrecto de columnas y moneda, duplicados por order_id, filas incompletas | Dedupe por clave natural, validaciones de tipos y rangos, reglas de normalización de importes, rechazo trazado | Desviación de revenue entre bronze y silver menor a 0.1 %, completitud mayor a 99 %, tiempo de carga de silver menor a 2 s en BI |
+
+
+
+
+
+| V prioritaria | Elecciones (Ingesta/Storage/Compute/Analítica)                                                                                                                                                                                                   | Riesgos clave                                                             | Mitigaciones                                                                                             | Métrica de éxito                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Velocidad     | Ingesta: microbatch de 5 a 15 min con ordenación por timestamp; Storage: bronze append en Parquet por hora y dispositivo; Compute: ventanas por hora y dedupe por device_id ts; Analítica: KPIs de disponibilidad y valores atípicos con alertas | Datos tardíos y desordenados, skew por dispositivo ruidoso, gaps de señal | Watermark por ts, reordenación por hora, imputación limitada, límites por sensor y detección de outliers | Frescura menor a 5 min del último evento, cobertura por dispositivo mayor a 98 %, tasa de outliers bajo umbral definido |
+
+
+
+
+
+| V prioritaria | Elecciones (Ingesta/Storage/Compute/Analítica)                                                                                                                                                                                                                            | Riesgos clave                                                                           | Mitigaciones                                                                                           | Métrica de éxito                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Velocidad     | Ingesta: microbatch 1 a 5 min con enriquecimiento IP y país; Storage: bronze con linaje y hash de evento, silver agregado por ventana; Compute: ventanas deslizantes y dedupe por hash, features de riesgo; Analítica: alertas de alto riesgo y KPI de tiempo a detección | Falsos positivos, duplicados en reintentos, PII en bruto, retrasos que ocultan patrones | Hash idempotente, anonimización de PII, umbrales calibrados, evaluación continua de precisión y recall | Tiempo a detección menor a 2 min, recall objetivo, ratio de falsos positivos bajo umbral de negocio, caída de fraude neto por periodo |
