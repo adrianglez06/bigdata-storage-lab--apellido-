@@ -121,3 +121,10 @@ Este laboratorio prioriza trazabilidad, simplicidad operativa y calidad de datos
      - Técnica: detección automática de esquema sugerido por similitud de nombres y bloqueo si falta alguna columna canónica.
      - Validación: regla estricta de no nulos en date, partner y amount, duplicados por clave natural rechazados.
      - Operativa: checklist en la app antes de derivar a silver y procedimiento de reingesta con registro de incidentes.
+    
+
+
+| V prioritaria                                | Elecciones (Ingesta/Storage/Compute/Analítica)                                                                                                                 | Riesgos clave                                              | Mitigaciones                                                           | Métrica de éxito                                                                           |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| [Veracidad/Velocidad/Volumen/Variedad/Valor] | Ingesta: [batch o streaming]; Storage: [bronze silver parquet particionado]; Compute: [pandas o Spark, ventanas, dedupe]; Analítica: [KPIs, SLA, segmentación] | [deriva de esquema, datos tardíos, duplicados, PII, picos] | [mapeo dinámico, watermark, clave natural, mascarado PII, autoscaling] | [SLA de frescura, % completitud, tasa de errores, tiempo de lectura, precisión de reporte] |
+
