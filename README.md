@@ -47,7 +47,6 @@ Secuencia obligatoria:
 **Total estimado**: 22 h
 
 ---
-Este laboratorio no es académico: es práctica forzada de ingeniería de datos. Si no respetas la trazabilidad y los controles de calidad, no sirve.  
 
 
 
