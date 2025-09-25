@@ -86,3 +86,38 @@ Este laboratorio prioriza trazabilidad, simplicidad operativa y calidad de datos
 ---
 
 
+## Respuestas a los Prompts de reflexión
+
+1) V dominante hoy y V dominante si 2× tráfico
+   - V dominante actual: Veracidad.
+   - V dominante con 2× tráfico: Velocidad, con Volumen como segundo factor.
+   - Justificación en 3 líneas:
+     1. La app ingiere CSV heterogéneos. El mayor riesgo es la calidad y el linaje, no el rendimiento.
+     2. Con 2× tráfico, el tiempo de respuesta y la cola de procesamiento impactan la experiencia.
+     3. El aumento de filas presiona memoria y E/S. Primero se siente en latencia, luego en tamaño.
+
+2) Trade-off elegido y medición
+   - Trade-off concreto elegido: Parquet con compresión Snappy en silver para lectura rápida vs Gzip para máxima compresión.
+   - Por qué lo elijo: optimizo tiempo de lectura en la app y en BI. La reducción de CPU en lectura pesa más que ahorrar unos MB.
+   - Cómo lo mediré:
+     - Métrica 1: tamaño en bytes de silver.csv vs silver.parquet.
+     - Métrica 2: tiempo de lectura en ms en 10 repeticiones, mismo dataset y entorno.
+     - Diseño del experimento: script reproducible, warmup descartado, media y desviación, commit de resultados en docs/performance.md.
+
+3) Inmutable + linaje y su coste
+   - Cómo mejora la veracidad: permite auditar cada registro hasta su archivo fuente y reproducir cualquier agregado sin manipular datos.
+   - Qué coste añade: más almacenamiento en bronze, más archivos y complejidad de orquestación y documentación.
+   - Decisión operativa resultante: retención definida por mes, nomenclatura con fecha y fuente, cambios solo por nuevas corridas versionadas.
+
+4) KPI principal y SLA del dashboard
+   - KPI que gobierna el producto: revenue mensual y partners activos.
+   - SLA de actualización: diario 09:00 Europa/Madrid.
+   - Decisión que habilita y por qué esa latencia: planificación comercial y seguimiento de ventas. La ingesta es batch diaria y no requiere latencia sub diaria para decisiones de negocio.
+
+5) Riesgo principal del diseño y mitigación
+   - Riesgo técnico clave: mapeo incorrecto de columnas que introduce nulos silenciosos y pérdida de registros válidos.
+   - Impacto si ocurre: silver infraestima revenue y rompe confianza en el dashboard.
+   - Mitigación concreta:
+     - Técnica: detección automática de esquema sugerido por similitud de nombres y bloqueo si falta alguna columna canónica.
+     - Validación: regla estricta de no nulos en date, partner y amount, duplicados por clave natural rechazados.
+     - Operativa: checklist en la app antes de derivar a silver y procedimiento de reingesta con registro de incidentes.
